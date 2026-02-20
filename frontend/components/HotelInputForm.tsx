@@ -34,7 +34,7 @@ export default function HotelInputForm({ onSubmit, isLoading, onReset, onProvide
     historical_occupancy: "",
     target_revpar: "",
     additional_context: "",
-    provider: "anthropic",
+    provider: "gemini",
   });
 
   const handleProviderChange = (provider: LLMProvider) => {

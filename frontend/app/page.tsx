@@ -12,7 +12,7 @@ type MobilePanel = "input" | "pipeline" | "results";
 
 export default function Home() {
   const { state, run, reset, setTab, setProvider } = useOptimize();
-  const [activeProvider, setActiveProvider] = useState<LLMProvider>("anthropic");
+  const [activeProvider, setActiveProvider] = useState<LLMProvider>("gemini");
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("input");
 
   const handleProviderChange = (provider: LLMProvider) => {
