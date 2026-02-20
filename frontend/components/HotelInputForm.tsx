@@ -139,7 +139,7 @@ export default function HotelInputForm({ onSubmit, isLoading, onReset, onProvide
           }}>
             Key Metrics
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: "8px" }}>
             <MetricField
               label="ADR (฿)"
               placeholder="12,000"

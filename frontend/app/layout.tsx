@@ -1,26 +1,11 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, JetBrains_Mono, DM_Sans } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-display",
+const dmSans = DM_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
@@ -36,9 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${cormorant.variable} ${jetbrainsMono.variable} ${dmSans.variable} antialiased`}
-      >
+      <body className={`${dmSans.variable} antialiased`}>
         {children}
       </body>
     </html>

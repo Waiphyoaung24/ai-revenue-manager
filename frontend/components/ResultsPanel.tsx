@@ -308,7 +308,7 @@ export default function ResultsPanel({ nodes, activeTab, result, onTabClick, pha
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "48px",
+        padding: "32px 24px",
         gap: "24px",
       }}>
         {/* Decorative icon */}
@@ -576,7 +576,7 @@ export default function ResultsPanel({ nodes, activeTab, result, onTabClick, pha
               </p>
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
                 gap: "8px 24px",
               }}>
                 {Object.entries(result.execution_times).map(([node, time]) => (

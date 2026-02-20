@@ -8,9 +8,12 @@ import ResultsPanel from "@/components/ResultsPanel";
 import { useOptimize } from "@/hooks/useOptimize";
 import { NodeName, LLMProvider } from "@/lib/types";
 
+type MobilePanel = "input" | "pipeline" | "results";
+
 export default function Home() {
   const { state, run, reset, setTab, setProvider } = useOptimize();
   const [activeProvider, setActiveProvider] = useState<LLMProvider>("anthropic");
+  const [mobilePanel, setMobilePanel] = useState<MobilePanel>("input");
 
   const handleProviderChange = (provider: LLMProvider) => {
     setActiveProvider(provider);
@@ -23,6 +26,12 @@ export default function Home() {
     ? Object.values(state.result.execution_times).reduce((a, b) => a + b, 0)
     : null;
 
+  // Auto-switch to results panel on mobile when analysis starts
+  const handleRun = (req: Parameters<typeof run>[0]) => {
+    run(req);
+    setMobilePanel("results");
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-base)", position: "relative", zIndex: 1 }}>
 
@@ -33,8 +42,8 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         style={{
           borderBottom: "1px solid var(--border-subtle)",
-          padding: "0 32px",
-          height: "52px",
+          padding: "0 20px",
+          height: "var(--header-h)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -47,7 +56,7 @@ export default function Home() {
         }}
       >
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div style={{
             width: "26px", height: "26px",
             background: "var(--gold)",
@@ -60,7 +69,7 @@ export default function Home() {
             </svg>
           </div>
           <div>
-            <span className="font-display" style={{ fontSize: "15px", fontWeight: 600, color: "var(--text-primary)", letterSpacing: "0.01em" }}>
+            <span className="font-display" style={{ fontSize: "14px", color: "var(--text-primary)", letterSpacing: "0.01em" }}>
               Revenue Intelligence
             </span>
             <span className="font-data" style={{ fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", marginLeft: "10px" }}>
@@ -70,7 +79,7 @@ export default function Home() {
         </div>
 
         {/* Right side indicators */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {/* Provider badge */}
           <AnimatePresence mode="wait">
             <motion.div
@@ -78,6 +87,7 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
+              className="header-provider-badge"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -96,7 +106,7 @@ export default function Home() {
                 background: activeProvider === "gemini" ? "var(--gemini)" : "var(--gold)",
                 flexShrink: 0,
               }} />
-              <span className="font-data">{activeProvider === "gemini" ? "Gemini" : "Claude"}</span>
+              <span className="badge-label font-data">{activeProvider === "gemini" ? "Gemini" : "Claude"}</span>
             </motion.div>
           </AnimatePresence>
 
@@ -107,6 +117,7 @@ export default function Home() {
                 initial={{ opacity: 0, x: 8 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0 }}
+                className="header-time-badge"
                 style={{
                   display: "flex", alignItems: "center", gap: "5px",
                   padding: "3px 10px",
@@ -123,7 +134,7 @@ export default function Home() {
           </AnimatePresence>
 
           {/* API status */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div className="header-live-badge" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <motion.div
               animate={{ opacity: [1, 0.4, 1] }}
               transition={{ repeat: Infinity, duration: 2.5 }}
@@ -139,20 +150,15 @@ export default function Home() {
         </div>
       </motion.header>
 
-      {/* ── Main Layout ── */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "380px 260px 1fr",
-        gridTemplateRows: "1fr",
-        height: "calc(100vh - 52px)",
-        gap: 0,
-      }}>
+      {/* ── Main 3-panel layout ── */}
+      <div className="app-layout">
 
-        {/* ── Panel 1: Input Form ── */}
+        {/* Panel 1: Input Form */}
         <motion.aside
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className={`panel-input ${mobilePanel === "input" ? "panel-active" : ""}`}
           style={{
             borderRight: "1px solid var(--border-subtle)",
             overflowY: "auto",
@@ -161,18 +167,19 @@ export default function Home() {
           }}
         >
           <HotelInputForm
-            onSubmit={run}
+            onSubmit={handleRun}
             isLoading={isActive}
             onReset={reset}
             onProviderChange={handleProviderChange}
           />
         </motion.aside>
 
-        {/* ── Panel 2: Pipeline ── */}
+        {/* Panel 2: Pipeline */}
         <motion.aside
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.5 }}
+          className={`panel-pipeline ${mobilePanel === "pipeline" ? "panel-active" : ""}`}
           style={{
             borderRight: "1px solid var(--border-subtle)",
             overflowY: "auto",
@@ -189,11 +196,12 @@ export default function Home() {
           />
         </motion.aside>
 
-        {/* ── Panel 3: Results ── */}
+        {/* Panel 3: Results */}
         <motion.main
           initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className={`panel-results ${mobilePanel === "results" ? "panel-active" : ""}`}
           style={{
             overflowY: "auto",
             display: "flex",
@@ -211,6 +219,72 @@ export default function Home() {
         </motion.main>
 
       </div>
+
+      {/* ── Mobile bottom navigation ── */}
+      <nav className="mobile-nav">
+        {([
+          {
+            id: "input" as MobilePanel,
+            label: "Configure",
+            icon: (
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+                <rect x="2" y="2" width="14" height="14" rx="2.5"/>
+                <path d="M5 6h8M5 9h8M5 12h5"/>
+              </svg>
+            ),
+          },
+          {
+            id: "pipeline" as MobilePanel,
+            label: "Pipeline",
+            icon: (
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+                <circle cx="9" cy="4" r="2"/>
+                <circle cx="9" cy="14" r="2"/>
+                <path d="M9 6v6"/>
+                <circle cx="4" cy="9" r="1.5"/>
+                <path d="M5.5 9H7"/>
+                <circle cx="14" cy="9" r="1.5"/>
+                <path d="M11 9h1.5"/>
+              </svg>
+            ),
+          },
+          {
+            id: "results" as MobilePanel,
+            label: "Results",
+            icon: (
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+                <path d="M3 13l4-5 3 3 3-4 3 2"/>
+                <path d="M3 3v12h12"/>
+              </svg>
+            ),
+          },
+        ] as const).map((tab) => (
+          <button
+            key={tab.id}
+            className={`mobile-nav-btn ${mobilePanel === tab.id ? "active" : ""}`}
+            onClick={() => setMobilePanel(tab.id)}
+          >
+            {tab.icon}
+            {tab.label}
+            {/* Active indicator dot */}
+            {tab.id === "results" && isActive && (
+              <motion.span
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ repeat: Infinity, duration: 1 }}
+                style={{
+                  position: "absolute",
+                  top: "8px",
+                  right: "calc(50% - 14px)",
+                  width: "5px", height: "5px",
+                  borderRadius: "50%",
+                  background: "var(--status-active-dot)",
+                }}
+              />
+            )}
+          </button>
+        ))}
+      </nav>
+
     </div>
   );
 }

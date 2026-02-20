@@ -53,6 +53,10 @@
   --gemini: #4285f4;
   --gemini-dim: rgba(66, 133, 244, 0.1);
   --gemini-border: rgba(66, 133, 244, 0.25);
+
+  /* Layout heights */
+  --header-h: 52px;
+  --mobile-nav-h: 56px;
 }
 
 @theme inline {
@@ -74,7 +78,7 @@ html {
 body {
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-sans), 'DM Sans', sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -104,17 +108,22 @@ body::after {
   opacity: 0.5;
 }
 
-/* Font utility classes */
+/* ── Single font system: DM Sans throughout ── */
+/* All classes use the same font-family; hierarchy via weight + spacing */
+
 .font-display {
-  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-sans), 'DM Sans', sans-serif;
+  font-weight: 600;
 }
 
 .font-data {
-  font-family: var(--font-jetbrains), 'JetBrains Mono', 'Fira Mono', monospace;
+  font-family: var(--font-sans), 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
 }
 
 .font-body {
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-sans), 'DM Sans', sans-serif;
 }
 
 /* Scrollbars */
@@ -178,4 +187,119 @@ a, button {
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE LAYOUT
+═══════════════════════════════════════════ */
+
+/* Desktop 3-column layout */
+.app-layout {
+  display: grid;
+  grid-template-columns: 380px 260px 1fr;
+  grid-template-rows: 1fr;
+  height: calc(100vh - var(--header-h));
+  gap: 0;
+}
+
+/* Tablet: 2-column — hide pipeline panel */
+@media (max-width: 1023px) {
+  .app-layout {
+    grid-template-columns: 300px 1fr;
+    height: calc(100vh - var(--header-h));
+  }
+  .panel-pipeline {
+    display: none;
+  }
+}
+
+/* Mobile: single panel view */
+@media (max-width: 767px) {
+  .app-layout {
+    display: block;
+    height: calc(100dvh - var(--header-h) - var(--mobile-nav-h));
+    overflow: hidden;
+  }
+
+  .app-layout > * {
+    position: absolute;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    bottom: var(--mobile-nav-h);
+    overflow-y: auto;
+    display: none !important;
+    flex-direction: column;
+  }
+
+  .app-layout > *.panel-active {
+    display: flex !important;
+  }
+}
+
+/* ── Mobile bottom navigation ── */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-nav-h);
+    background: rgba(10, 10, 10, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-subtle);
+    z-index: 200;
+  }
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+  padding: 8px 0;
+  font-family: var(--font-sans), 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.mobile-nav-btn.active {
+  color: var(--gold);
+}
+
+.mobile-nav-btn svg {
+  width: 18px;
+  height: 18px;
+  margin-bottom: 1px;
+}
+
+/* ── Header responsive tweaks ── */
+@media (max-width: 767px) {
+  .header-live-badge {
+    display: none;
+  }
+  .header-time-badge {
+    display: none;
+  }
+}
+
+@media (max-width: 479px) {
+  .header-provider-badge span.badge-label {
+    display: none;
+  }
 }
