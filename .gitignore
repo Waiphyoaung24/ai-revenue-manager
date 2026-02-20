@@ -21,3 +21,7 @@ wheels/
 
 # Reports
 evals/reports/
+
+# Generated outputs / local docs
+docs/
+prd_outputs/
