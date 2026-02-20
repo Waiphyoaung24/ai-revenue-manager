@@ -91,6 +91,25 @@ services:
       - monitoring
     restart: always
 
+  # Next.js frontend (port 3001 — Grafana occupies 3000)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://app:8000
+    ports:
+      - "3001:3001"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://app:8000
+      - PORT=3001
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - monitoring
+    restart: unless-stopped
+
 
 networks:
   monitoring:

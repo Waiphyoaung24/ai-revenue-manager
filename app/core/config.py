@@ -147,6 +147,23 @@ class Settings:
         self.LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY", "")
         self.LANGFUSE_HOST = os.getenv("LANGFUSE_HOST", "https://cloud.langfuse.com")
 
+        # Anthropic Configuration (for revenue optimization agents)
+        self.ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+        self.REVENUE_ROUTER_MODEL = os.getenv("REVENUE_ROUTER_MODEL", "claude-haiku-4-5-20251001")
+        self.REVENUE_ANALYST_MODEL = os.getenv("REVENUE_ANALYST_MODEL", "claude-haiku-4-5-20251001")
+        self.REVENUE_FORECASTER_MODEL = os.getenv("REVENUE_FORECASTER_MODEL", "claude-sonnet-4-6")
+        self.REVENUE_STRATEGIST_MODEL = os.getenv("REVENUE_STRATEGIST_MODEL", "claude-sonnet-4-6")
+        self.REVENUE_MANAGER_MODEL = os.getenv("REVENUE_MANAGER_MODEL", "claude-haiku-4-5-20251001")
+
+        # Google Gemini Configuration (for revenue optimization agents)
+        self.GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+        # Fast/light nodes use Flash; heavy reasoning nodes use Pro
+        self.GEMINI_ROUTER_MODEL = os.getenv("GEMINI_ROUTER_MODEL", "gemini-3-flash-preview")
+        self.GEMINI_ANALYST_MODEL = os.getenv("GEMINI_ANALYST_MODEL", "gemini-3-flash-preview")
+        self.GEMINI_FORECASTER_MODEL = os.getenv("GEMINI_FORECASTER_MODEL", "gemini-3-flash-preview")
+        self.GEMINI_STRATEGIST_MODEL = os.getenv("GEMINI_STRATEGIST_MODEL", "gemini-3-flash-preview")
+        self.GEMINI_MANAGER_MODEL = os.getenv("GEMINI_MANAGER_MODEL", "gemini-3-flash-preview")
+
         # LangGraph Configuration
         self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
         self.DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gpt-5-mini")
@@ -190,6 +207,8 @@ class Settings:
             "login": ["20 per minute"],
             "root": ["10 per minute"],
             "health": ["20 per minute"],
+            "optimize": ["10 per minute"],
+            "optimize_stream": ["5 per minute"],
         }
 
         # Update rate limit endpoints from environment variables

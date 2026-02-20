@@ -8,6 +8,7 @@ from app.schemas.chat import (
     StreamResponse,
 )
 from app.schemas.graph import GraphState
+from app.schemas.revenue import AgentState
 
 __all__ = [
     "Token",
@@ -16,4 +17,5 @@ __all__ = [
     "Message",
     "StreamResponse",
     "GraphState",
+    "AgentState",
 ]
