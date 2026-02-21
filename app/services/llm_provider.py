@@ -88,7 +88,7 @@ async def call_llm(
     user: str,
     model: str,
     provider: ProviderName = "anthropic",
-    max_tokens: int = 2048,
+    max_tokens: int = 8192,
     json_mode: bool = False,
 ) -> str:
     """Call the specified LLM provider with system + user messages.
@@ -142,6 +142,11 @@ async def _call_gemini(*, system: str, user: str, model: str, max_tokens: int, j
         max_output_tokens=max_tokens,
         temperature=0.3,
         response_mime_type="application/json" if json_mode else None,
+        # Disable AFC to avoid the 10-call limit warning and prevent
+        # unexpected automatic function-call loops on plain text requests.
+        automatic_function_calling=genai_types.AutomaticFunctionCallingConfig(
+            disable=True
+        ),
     )
     response = await client.aio.models.generate_content(
         model=model,
