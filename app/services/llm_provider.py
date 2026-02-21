@@ -88,7 +88,7 @@ async def call_llm(
     user: str,
     model: str,
     provider: ProviderName = "anthropic",
-    max_tokens: int = 2048,
+    max_tokens: int = 4096,
     json_mode: bool = False,
 ) -> str:
     """Call the specified LLM provider with system + user messages.

@@ -41,7 +41,7 @@ Classify this input."""
         user=user_message,
         model=model,
         provider=provider,
-        max_tokens=2048,
+        max_tokens=4096,
         json_mode=True,
     )
 
