@@ -160,8 +160,8 @@ class Settings:
         # Fast/light nodes use Flash; heavy reasoning nodes use Pro
         self.GEMINI_ROUTER_MODEL = os.getenv("GEMINI_ROUTER_MODEL", "gemini-2.0-flash")
         self.GEMINI_ANALYST_MODEL = os.getenv("GEMINI_ANALYST_MODEL", "gemini-2.0-flash")
-        self.GEMINI_FORECASTER_MODEL = os.getenv("GEMINI_FORECASTER_MODEL", "gemini-2.5-pro-preview-06-05")
-        self.GEMINI_STRATEGIST_MODEL = os.getenv("GEMINI_STRATEGIST_MODEL", "gemini-2.5-pro-preview-06-05")
+        self.GEMINI_FORECASTER_MODEL = os.getenv("GEMINI_FORECASTER_MODEL", "gemini-2.0-flash")
+        self.GEMINI_STRATEGIST_MODEL = os.getenv("GEMINI_STRATEGIST_MODEL", "gemini-2.0-flash")
         self.GEMINI_MANAGER_MODEL = os.getenv("GEMINI_MANAGER_MODEL", "gemini-2.0-flash")
 
         # LangGraph Configuration

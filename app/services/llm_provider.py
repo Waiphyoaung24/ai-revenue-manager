@@ -88,7 +88,7 @@ async def call_llm(
     user: str,
     model: str,
     provider: ProviderName = "anthropic",
-    max_tokens: int = 4096,
+    max_tokens: int = 2048,
     json_mode: bool = False,
 ) -> str:
     """Call the specified LLM provider with system + user messages.
@@ -148,4 +148,23 @@ async def _call_gemini(*, system: str, user: str, model: str, max_tokens: int, j
         contents=user,
         config=config,
     )
-    return response.text
+    # response.text raises ValueError when blocked; fall back to empty string
+    # so callers always receive a string rather than None or an exception.
+    try:
+        text = response.text
+    except ValueError:
+        text = None
+    if not text:
+        # Extract raw text from candidates as fallback
+        try:
+            text = response.candidates[0].content.parts[0].text or ""
+        except (IndexError, AttributeError):
+            text = ""
+        logger.warning(
+            "gemini_response_text_empty",
+            model=model,
+            finish_reason=getattr(
+                getattr(response.candidates[0], "finish_reason", None), "name", "UNKNOWN"
+            ) if response.candidates else "NO_CANDIDATES",
+        )
+    return text
