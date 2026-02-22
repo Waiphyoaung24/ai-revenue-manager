@@ -5,12 +5,12 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from app.api.v1.auth import get_current_user
+from app.api.v1.auth import get_current_session
 from app.core.config import settings
 from app.core.limiter import limiter
 from app.core.logging import logger
 from app.models.optimization import OptimizationRecord
-from app.models.user import User
+from app.models.session import Session
 from app.schemas.optimize import OptimizeResponse
 from app.services.optimization_history import optimization_history_service
 
@@ -49,7 +49,7 @@ async def get_optimization_history(
     request: Request,
     limit: int = Query(default=20, ge=1, le=100, description="Records per page"),
     offset: int = Query(default=0, ge=0, description="Pagination offset"),
-    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_current_session),
 ) -> Dict[str, Any]:
     """Return paginated optimization history for the authenticated user.
 
@@ -57,40 +57,40 @@ async def get_optimization_history(
         request: FastAPI request (for rate limiting).
         limit: Number of records per page (1–100).
         offset: How many records to skip.
-        current_user: Injected authenticated user.
+        session: Injected current session (carries user_id).
 
     Returns:
         A dict with ``items`` list and ``total`` count.
     """
     try:
         records = optimization_history_service.list_for_user(
-            user_id=current_user.id,
+            user_id=session.user_id,
             limit=limit,
             offset=offset,
         )
         items = [_record_to_response(r) for r in records]
         logger.info(
             "history_retrieved",
-            user_id=current_user.id,
+            user_id=session.user_id,
             count=len(items),
             offset=offset,
         )
         return {"items": items, "count": len(items), "offset": offset, "limit": limit}
     except Exception as e:
-        logger.error("history_retrieval_failed", user_id=current_user.id, error=str(e), exc_info=True)
+        logger.error("history_retrieval_failed", user_id=session.user_id, error=str(e), exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/history/{record_id}")
 async def get_optimization_detail(
     record_id: int,
-    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_current_session),
 ) -> Dict[str, Any]:
     """Return a single optimization record by ID (ownership enforced).
 
     Args:
         record_id: The primary key of the OptimizationRecord.
-        current_user: Injected authenticated user.
+        session: Injected current session (carries user_id).
 
     Returns:
         The serialized record dict.
@@ -98,7 +98,7 @@ async def get_optimization_detail(
     Raises:
         HTTPException 404 if not found or not owned by this user.
     """
-    record = optimization_history_service.get_by_id(record_id, current_user.id)
+    record = optimization_history_service.get_by_id(record_id, session.user_id)
     if record is None:
         raise HTTPException(status_code=404, detail="Optimization record not found")
     return _record_to_response(record)

@@ -5,14 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import HotelInputForm from "@/components/HotelInputForm";
 import AgentPipeline from "@/components/AgentPipeline";
 import ResultsPanel from "@/components/ResultsPanel";
-import ChatPanel from "@/components/ChatPanel";
 import HistoryPanel from "@/components/HistoryPanel";
 import AuthGate from "@/components/AuthGate";
 import { useOptimize } from "@/hooks/useOptimize";
 import { NodeName, LLMProvider } from "@/lib/types";
 import { isAuthenticated, clearTokens } from "@/lib/auth";
 
-type MobilePanel = "input" | "pipeline" | "results" | "chat" | "history";
+type MobilePanel = "input" | "pipeline" | "results" | "history";
 
 export default function Home() {
   const { state, run, reset, setTab, setProvider } = useOptimize();
@@ -170,10 +169,9 @@ export default function Home() {
         <div className="desktop-tab-bar">
           {([
             { id: "optimize", label: "Optimize" },
-            { id: "chat", label: "AI Advisor" },
             { id: "history", label: "History" },
           ] as { id: string; label: string }[]).map(tab => {
-            const isActive2 = (tab.id === "optimize" && !["chat", "history"].includes(mobilePanel)) || mobilePanel === tab.id;
+            const isActive2 = (tab.id === "optimize" && mobilePanel !== "history") || mobilePanel === tab.id;
             return (
               <button
                 key={tab.id}
@@ -197,13 +195,7 @@ export default function Home() {
 
       {/* Main content areas */}
       <AnimatePresence mode="wait">
-        {mobilePanel === "chat" ? (
-          <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ height: "calc(100vh - var(--header-h) - var(--mobile-nav-h, 56px))", display: "flex", flexDirection: "column" }}
-          >
-            <ChatPanel />
-          </motion.div>
-        ) : mobilePanel === "history" ? (
+        {mobilePanel === "history" ? (
           <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             style={{ height: "calc(100vh - var(--header-h) - var(--mobile-nav-h, 56px))", overflow: "hidden" }}
           >
@@ -262,8 +254,6 @@ export default function Home() {
             icon: <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><circle cx="9" cy="4" r="2"/><circle cx="9" cy="14" r="2"/><path d="M9 6v6"/><circle cx="4" cy="9" r="1.5"/><path d="M5.5 9H7"/><circle cx="14" cy="9" r="1.5"/><path d="M11 9h1.5"/></svg> },
           { id: "results" as MobilePanel, label: "Results",
             icon: <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M3 13l4-5 3 3 3-4 3 2"/><path d="M3 3v12h12"/></svg> },
-          { id: "chat" as MobilePanel, label: "Chat",
-            icon: <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M15 3H3a1 1 0 00-1 1v8a1 1 0 001 1h4l2 2 2-2h4a1 1 0 001-1V4a1 1 0 00-1-1z"/></svg> },
           { id: "history" as MobilePanel, label: "History",
             icon: <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 5v4l3 2"/></svg> },
         ] as const).map((tab) => (
