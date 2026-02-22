@@ -1,6 +1,15 @@
 import { OptimizeRequest, NodeName, StreamEvent } from "./types";
+import { getSessionToken } from "./auth";
 
 const BASE = "";
+
+function authHeaders(): HeadersInit {
+  const token = getSessionToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
 
 export async function* streamOptimize(
   req: OptimizeRequest,
@@ -8,7 +17,7 @@ export async function* streamOptimize(
 ): AsyncGenerator<StreamEvent> {
   const res = await fetch(`${BASE}/api/v1/optimize/stream`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(req),
     signal,
   });
