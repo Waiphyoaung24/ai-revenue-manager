@@ -66,6 +66,7 @@ services:
     restart: unless-stopped
     networks:
       - internal
+      - dokploy-network
 
   frontend:
     build:
@@ -75,8 +76,6 @@ services:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://app:8002}
     ports:
       - "3002:3002"
-    expose:
-      - "3002"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://app:8002}
       - PORT=3002
@@ -87,10 +86,13 @@ services:
     restart: unless-stopped
     networks:
       - internal
+      - dokploy-network
 
 networks:
   internal:
     driver: bridge
+  dokploy-network:
+    external: true
 
 volumes:
   postgres-data:
