@@ -39,8 +39,6 @@ services:
         APP_ENV: ${APP_ENV:-production}
     ports:
       - "8002:8002"
-    env_file:
-      - .env
     environment:
       - APP_ENV=${APP_ENV:-production}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
