@@ -1,55 +1,70 @@
 @import "tailwindcss";
 
 :root {
-  /* Backgrounds */
-  --bg-base: #0a0a0a;
-  --bg-panel: #111111;
-  --bg-card: #181818;
-  --bg-elevated: #1f1f1f;
-  --bg-input: #0e0e0e;
-  --bg-hover: #202020;
+  /* ── NEX·APEX brand source-of-truth (matches landing + auth) ── */
+  --rv-bg: #0e1418;
+  --rv-surface: #162029;
+  --rv-surface-2: #1d2d39;
+  --rv-teal: #1a2630;
+  --rv-cyan: #94fcff;
+  --rv-mauve: #b9afbb;
+  --rv-sage: #dfe4dc;
+  --rv-slate: #45596d;
+  --rv-red: #c63518;
+  --rv-white: #f0f1ef;
+  --rv-text: #c8ccc6;
+  --rv-dim: #6e7a84;
+  --rv-muted: rgba(240, 241, 239, 0.7);
 
-  /* Borders */
-  --border: #222222;
-  --border-subtle: #1a1a1a;
-  --border-active: #333333;
-  --border-focus: #5a4820;
+  /* Backgrounds — aligned to NEX·APEX teal-black */
+  --bg-base: var(--rv-bg);
+  --bg-panel: #121a20;
+  --bg-card: var(--rv-surface);
+  --bg-elevated: var(--rv-surface-2);
+  --bg-input: #0e1418;
+  --bg-hover: #1a2630;
 
-  /* Gold palette */
-  --gold: #c9a84c;
-  --gold-bright: #e8c56e;
-  --gold-dim: #7a6130;
-  --gold-muted: #3d3018;
-  --gold-glow: rgba(201, 168, 76, 0.12);
-  --gold-glow-strong: rgba(201, 168, 76, 0.22);
+  /* Borders — cool slate, not warm neutral */
+  --border: #1d2d39;
+  --border-subtle: #162029;
+  --border-active: #2a3f4f;
+  --border-focus: rgba(148, 252, 255, 0.45);
+
+  /* Primary accent — Apex Cyan (legacy --gold-* names retained, redirected) */
+  --gold: var(--rv-cyan);
+  --gold-bright: #b8feff;
+  --gold-dim: #4fc8cc;
+  --gold-muted: rgba(148, 252, 255, 0.14);
+  --gold-glow: rgba(148, 252, 255, 0.12);
+  --gold-glow-strong: rgba(148, 252, 255, 0.24);
 
   /* Text */
-  --text-primary: #ede8dc;
-  --text-secondary: #7a7265;
-  --text-muted: #3d3830;
-  --text-dim: #2a2620;
+  --text-primary: var(--rv-white);
+  --text-secondary: var(--rv-text);
+  --text-muted: var(--rv-dim);
+  --text-dim: #3a4854;
 
-  /* Status colors */
-  --status-pending-bg: #111111;
-  --status-pending-border: #222222;
-  --status-pending-dot: #333333;
+  /* Status colors — cyan = active/done, brand red = error */
+  --status-pending-bg: #121a20;
+  --status-pending-border: #1d2d39;
+  --status-pending-dot: #45596d;
 
-  --status-active-bg: #0a150a;
-  --status-active-border: #1e5c1e;
-  --status-active-dot: #4ade80;
-  --status-active-text: #4ade80;
+  --status-active-bg: rgba(148, 252, 255, 0.06);
+  --status-active-border: rgba(148, 252, 255, 0.32);
+  --status-active-dot: var(--rv-cyan);
+  --status-active-text: var(--rv-cyan);
 
-  --status-done-bg: #0d1408;
-  --status-done-border: #2d5016;
-  --status-done-dot: #c9a84c;
-  --status-done-text: #c9a84c;
+  --status-done-bg: rgba(148, 252, 255, 0.04);
+  --status-done-border: rgba(148, 252, 255, 0.22);
+  --status-done-dot: var(--rv-cyan);
+  --status-done-text: var(--rv-cyan);
 
-  --status-error-bg: #150a0a;
-  --status-error-border: #5c1e1e;
-  --status-error-dot: #f87171;
-  --status-error-text: #f87171;
+  --status-error-bg: rgba(198, 53, 24, 0.08);
+  --status-error-border: rgba(198, 53, 24, 0.42);
+  --status-error-dot: var(--rv-red);
+  --status-error-text: #ff7a5c;
 
-  /* Gemini blue */
+  /* Provider chip — Gemini retained as literal Google blue only on auth button */
   --gemini: #4285f4;
   --gemini-dim: rgba(66, 133, 244, 0.1);
   --gemini-border: rgba(66, 133, 244, 0.25);
@@ -86,14 +101,14 @@ body {
   line-height: 1.5;
 }
 
-/* Subtle vignette + grain */
+/* Subtle vignette + grain — Apex Cyan tinted */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201, 168, 76, 0.03) 0%, transparent 60%),
-    radial-gradient(ellipse at 100% 100%, rgba(10,10,10,0.8) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(148, 252, 255, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 100%, rgba(14, 20, 24, 0.85) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -104,16 +119,21 @@ body::after {
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
   pointer-events: none;
-  z-index: 9998;
-  opacity: 0.5;
+  /* Sit above bg, below all UI — was 9998 which dulled interactive states */
+  z-index: 1;
+  opacity: 0.35;
 }
 
-/* ── Single font system: DM Sans throughout ── */
-/* All classes use the same font-family; hierarchy via weight + spacing */
+/* ── NEX·APEX type system ── */
+/* Display = Orbitron (uppercase, wide tracking) — brand identity */
+/* Data = DM Sans tabular — numerical precision */
+/* Body = DM Sans — UI surfaces */
 
 .font-display {
-  font-family: var(--font-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-display), 'Orbitron', var(--font-sans), sans-serif;
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .font-data {
@@ -250,7 +270,7 @@ a, button {
     left: 0;
     right: 0;
     height: var(--mobile-nav-h);
-    background: rgba(10, 10, 10, 0.98);
+    background: rgba(14, 20, 24, 0.94);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-subtle);
@@ -288,7 +308,7 @@ a, button {
 
 .mobile-nav-btn.active {
   color: var(--gold);
-  background: rgba(201, 168, 76, 0.04);
+  background: var(--gold-muted);
 }
 
 /* Gold top-line indicator for active tab */
@@ -322,5 +342,207 @@ a, button {
 @media (max-width: 479px) {
   .header-provider-badge span.badge-label {
     display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD SHELL
+═══════════════════════════════════════════ */
+
+.dash-shell {
+  min-height: 100vh;
+  background: var(--bg-base);
+  position: relative;
+  z-index: 1;
+}
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-h);
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(14, 20, 24, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dash-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dash-brand-mark {
+  font-family: var(--font-display), 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(148, 252, 255, 0.18));
+  flex-shrink: 0;
+}
+.dash-brand-mark-sep { color: var(--gold); }
+
+.dash-brand-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+}
+
+.dash-brand-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.dash-brand-title {
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.14em;
+}
+.dash-brand-version {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dash-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dash-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  border: 1px solid transparent;
+}
+.dash-chip-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dash-chip--gemini {
+  border-color: var(--gemini-border);
+  color: var(--gemini);
+  background: var(--gemini-dim);
+}
+.dash-chip--gemini .dash-chip-dot { background: var(--gemini); }
+.dash-chip--claude {
+  border-color: var(--gold-glow-strong);
+  color: var(--gold);
+  background: var(--gold-muted);
+}
+.dash-chip--claude .dash-chip-dot { background: var(--gold); }
+.dash-chip--time {
+  border-color: var(--status-done-border);
+  color: var(--gold);
+  background: var(--status-done-bg);
+}
+
+.dash-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dash-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.dash-status-dot--live { background: var(--status-active-dot); }
+.dash-status-dot--auth { background: var(--rv-mauve); }
+.dash-status-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dash-logout-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.dash-logout-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-active);
+}
+
+.desktop-tab-bar {
+  display: none;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-base);
+  position: sticky;
+  top: var(--header-h);
+  z-index: 90;
+}
+@media (min-width: 768px) {
+  .desktop-tab-bar { display: flex; }
+  .dash-logout-btn { display: block; }
+}
+
+.dash-tab {
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  transition: color 0.15s, border-color 0.15s;
+}
+.dash-tab--active {
+  color: var(--text-primary);
+  border-bottom-color: var(--gold);
+}
+
+.dash-panel {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.dash-panel--bordered {
+  border-right: 1px solid var(--border-subtle);
+}
+
+.dash-history-pane {
+  height: calc(100vh - var(--header-h) - var(--mobile-nav-h, 56px));
+  overflow: hidden;
+}
+
+.dash-results-pulse {
+  position: absolute;
+  top: 8px;
+  right: calc(50% - 14px);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--status-active-dot);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-shell *,
+  .dash-shell *::before,
+  .dash-shell *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
