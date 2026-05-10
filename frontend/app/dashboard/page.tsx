@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import HotelInputForm from "@/components/HotelInputForm";
 import AgentPipeline from "@/components/AgentPipeline";
 import ResultsPanel from "@/components/ResultsPanel";
 import HistoryPanel from "@/components/HistoryPanel";
-import AuthGate from "@/components/AuthGate";
 import { useOptimize } from "@/hooks/useOptimize";
 import { NodeName, LLMProvider } from "@/lib/types";
 import { isAuthenticated, clearTokens } from "@/lib/auth";
@@ -14,16 +14,19 @@ import { isAuthenticated, clearTokens } from "@/lib/auth";
 type MobilePanel = "input" | "pipeline" | "results" | "history";
 
 export default function Home() {
+  const router = useRouter();
   const { state, run, reset, setTab, setProvider } = useOptimize();
   const [activeProvider, setActiveProvider] = useState<LLMProvider>("gemini");
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("input");
-  const [authed, setAuthed] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    setAuthed(isAuthenticated());
+    if (!isAuthenticated()) {
+      router.replace("/auth");
+      return;
+    }
     setAuthChecked(true);
-  }, []);
+  }, [router]);
 
   const handleProviderChange = (provider: LLMProvider) => {
     setActiveProvider(provider);
@@ -43,18 +46,14 @@ export default function Home() {
 
   const handleLogout = () => {
     clearTokens();
-    setAuthed(false);
     reset();
+    router.replace("/auth");
   };
 
   if (!authChecked) return null;
 
   return (
     <div className="dash-shell">
-      <AnimatePresence>
-        {!authed && <AuthGate onAuthenticated={() => setAuthed(true)} />}
-      </AnimatePresence>
-
       <motion.header
         className="dash-header"
         initial={{ opacity: 0 }}
@@ -103,41 +102,37 @@ export default function Home() {
             <motion.span
               animate={{ opacity: [1, 0.4, 1] }}
               transition={{ repeat: Infinity, duration: 2.5 }}
-              className={`dash-status-dot ${authed ? "dash-status-dot--live" : "dash-status-dot--auth"}`}
+              className="dash-status-dot dash-status-dot--live"
             />
-            <span className="font-data dash-status-label">{authed ? "Live" : "Auth"}</span>
+            <span className="font-data dash-status-label">Live</span>
           </div>
 
-          {authed && (
-            <button onClick={handleLogout} className="dash-logout-btn">
-              Sign out
-            </button>
-          )}
+          <button onClick={handleLogout} className="dash-logout-btn">
+            Sign out
+          </button>
         </div>
       </motion.header>
 
-      {authed && (
-        <div className="desktop-tab-bar">
-          {([
-            { id: "optimize", label: "Optimize" },
-            { id: "history", label: "History" },
-          ] as { id: string; label: string }[]).map(tab => {
-            const isActive2 = (tab.id === "optimize" && mobilePanel !== "history") || mobilePanel === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  if (tab.id === "optimize") setMobilePanel("input");
-                  else setMobilePanel(tab.id as MobilePanel);
-                }}
-                className={`dash-tab ${isActive2 ? "dash-tab--active" : ""}`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <div className="desktop-tab-bar">
+        {([
+          { id: "optimize", label: "Optimize" },
+          { id: "history", label: "History" },
+        ] as { id: string; label: string }[]).map(tab => {
+          const isActive2 = (tab.id === "optimize" && mobilePanel !== "history") || mobilePanel === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                if (tab.id === "optimize") setMobilePanel("input");
+                else setMobilePanel(tab.id as MobilePanel);
+              }}
+              className={`dash-tab ${isActive2 ? "dash-tab--active" : ""}`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
 
       <AnimatePresence mode="wait">
         {mobilePanel === "history" ? (
