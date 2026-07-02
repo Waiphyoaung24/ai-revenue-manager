@@ -67,21 +67,10 @@ class UserCreate(BaseModel):
         """
         password = v.get_secret_value()
 
-        # Check for common password requirements
+        # ponytail: length is the only requirement (min 8). Complexity rules
+        # dropped by request — re-add character-class checks here to harden.
         if len(password) < 8:
             raise ValueError("Password must be at least 8 characters long")
-
-        if not re.search(r"[A-Z]", password):
-            raise ValueError("Password must contain at least one uppercase letter")
-
-        if not re.search(r"[a-z]", password):
-            raise ValueError("Password must contain at least one lowercase letter")
-
-        if not re.search(r"[0-9]", password):
-            raise ValueError("Password must contain at least one number")
-
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-            raise ValueError("Password must contain at least one special character")
 
         return v
 
