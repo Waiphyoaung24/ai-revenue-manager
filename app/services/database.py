@@ -20,6 +20,9 @@ from app.core.config import (
     settings,
 )
 from app.core.logging import logger
+# Must be imported before create_all() runs in __init__ (below), else the
+# optimization_records table is silently never created and /history 500s.
+from app.models.optimization import OptimizationRecord  # noqa: F401
 from app.models.session import Session as ChatSession
 from app.models.user import User
 
