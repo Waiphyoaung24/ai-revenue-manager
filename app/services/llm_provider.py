@@ -15,7 +15,14 @@ from typing import Literal
 
 import anthropic
 from google import genai
+from google.genai import errors as genai_errors
 from google.genai import types as genai_types
+from tenacity import (
+    retry,
+    retry_if_exception,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -78,10 +85,52 @@ def get_model_for_node(provider: ProviderName, node_role: str) -> str:
 
 
 # ──────────────────────────────────────────────
+# Retry policy — transient errors only
+# ──────────────────────────────────────────────
+
+
+def _is_retryable(exc: BaseException) -> bool:
+    """True for transient failures worth retrying; False for permanent ones.
+
+    Retries 5xx (e.g. Gemini 503 "high demand"), 429 rate limits, and
+    connection/timeout errors. Never retries 400/403/404 (bad key, bad model)
+    — retrying those just burns time and quota.
+    """
+    # Google Gemini (google-genai)
+    if isinstance(exc, genai_errors.ServerError):  # any 5xx
+        return True
+    if isinstance(exc, genai_errors.ClientError) and getattr(exc, "code", None) == 429:
+        return True
+    # Anthropic Claude
+    if isinstance(exc, (anthropic.APIConnectionError, anthropic.RateLimitError)):
+        return True
+    if isinstance(exc, anthropic.APIStatusError) and getattr(exc, "status_code", 0) >= 500:
+        return True
+    return False
+
+
+def _log_retry(retry_state) -> None:
+    """Log each retry attempt with the app's structured logger."""
+    exc = retry_state.outcome.exception()
+    logger.warning(
+        "llm_call_retry",
+        attempt=retry_state.attempt_number,
+        error=str(exc)[:200],
+    )
+
+
+# ──────────────────────────────────────────────
 # Unified async call
 # ──────────────────────────────────────────────
 
 
+@retry(
+    retry=retry_if_exception(_is_retryable),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=1, max=10),
+    before_sleep=_log_retry,
+    reraise=True,  # surface the real provider error, not tenacity's RetryError
+)
 async def call_llm(
     *,
     system: str,

@@ -26,3 +26,6 @@ evals/reports/
 docs/
 prd_outputs/
 .worktrees/
+
+# Local notes with credentials — do not commit
+CLAUDE.md
